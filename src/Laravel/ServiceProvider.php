@@ -2,6 +2,7 @@
 
 namespace PdfTools\Laravel;
 
+use PdfTools\Client;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider as BaseProvider;
