@@ -1,6 +1,6 @@
 <?php
 
-namespace PdfTools;
+namespace PdfTools\Laravel;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Support\DeferrableProvider;

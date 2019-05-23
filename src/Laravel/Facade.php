@@ -1,6 +1,6 @@
 <?php
 
-namespace PdfTools;
+namespace PdfTools\Laravel;
 
 use Illuminate\Support\Facades\Facade as BaseFacade;
 
