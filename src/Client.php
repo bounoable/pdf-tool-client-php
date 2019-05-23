@@ -23,13 +23,13 @@ class Client
     /**
      * Create a client instance.
      *
-     * @param  string  $baseUri  Base URI to the utility server.
+     * @param  string  $baseURI  Base URI to the utility server.
      * @param  array  $guzzleConfig  Guzzle HTTP client config.
      * @return self
      */
-    public static function create(string $baseUri = 'http://localhost:3001', array $guzzleConfig = [])
+    public static function create(string $baseURI, array $guzzleConfig = [])
     {
-        $config = array_merge(['base_uri' => $baseUri], $guzzleConfig);
+        $config = array_merge(['base_uri' => $baseURI], $guzzleConfig);
 
         return new Client(new GuzzleClient($config));
     }
