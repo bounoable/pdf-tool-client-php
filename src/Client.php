@@ -86,8 +86,15 @@ class Client
                 RequestOptions::JSON => $data,
             ]);
         } catch (GuzzleRequestException $e) {
-            $response = json_decode($e->getResponse()->getBody()->getContents(), true);
-            throw new RequestException($response['message']);
+            $response = $e->getResponse();
+            $message = $response ? json_decode($response->getBody()->getContents(), true)['message'] : $this->serverUnreachableMessage(Endpoint::PAGE_TO_PDF);
+
+            throw new RequestException($message);
         }
+    }
+
+    protected function serverUnreachableMessage(string $endpoint): string
+    {
+        return sprintf("The URL '%s%s' was not reachable.", $this->client->getConfig('base_uri'), $endpoint);
     }
 }
