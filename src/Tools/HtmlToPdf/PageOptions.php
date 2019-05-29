@@ -7,7 +7,7 @@ class PageOptions
     /**
      * @var string|null
      */
-    public $url;
+    public $uri;
 
     /**
      * @var string|null
@@ -47,7 +47,7 @@ class PageOptions
     public function toArray(): array
     {
         return [
-            'url' => $this->url,
+            'uri' => $this->uri,
             'selector' => $this->selector,
             'waitUntil' => $this->waitUntil,
             'waitForSelector' => $this->waitForSelector,

@@ -34,7 +34,7 @@ class HtmlToPdf
     {
         if (is_string($options)) {
             $opt = new PageOptions();
-            $opt->url = $options;
+            $opt->uri = $options;
         } elseif (is_array($options)) {
             $opt = new PageOptions();
 
