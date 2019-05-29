@@ -23,7 +23,8 @@ class ServiceProvider extends BaseProvider implements DeferrableProvider
 
             return Client::create(
                 $config->get('pdf-tools.baseURI', 'http://localhost:3001'),
-                $config->get('pdf-tools.guzzleConfig', [])
+                $config->get('pdf-tools.guzzleConfig', []),
+                $config->get('pdf-tools.endpoints', [])
             );
         });
 
