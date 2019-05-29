@@ -52,9 +52,11 @@ class HtmlToPdf
 
     public function request(): Request
     {
-        return new Request($this->client->uri(self::class), 'POST', array_map(function (PageOptions $page) {
+        $pages = array_map(function (PageOptions $page) {
             return $page->toArray();
-        }, $this->pages));
+        }, $this->pages);
+
+        return new Request($this->client->uri(self::class), 'POST', ['pages' => $pages]);
     }
 
     public function create(): ResponseInterface
