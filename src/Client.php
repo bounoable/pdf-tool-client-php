@@ -2,11 +2,10 @@
 
 namespace PdfTools;
 
-use GuzzleHttp\RequestOptions;
+use PdfTools\Tools\HtmlToPdf;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Client as GuzzleClient;
 use Psr\Http\Message\ResponseInterface;
-use GuzzleHttp\Exception\RequestException as GuzzleRequestException;
 
 class Client
 {
@@ -15,9 +14,15 @@ class Client
      */
     private $client;
 
-    public function __construct(ClientInterface $client)
+    /**
+     * @var array
+     */
+    private $endpoints;
+
+    public function __construct(ClientInterface $client, array $endpoints = [])
     {
         $this->client = $client;
+        $this->endpoints = $endpoints;
     }
 
     /**
@@ -25,76 +30,30 @@ class Client
      *
      * @param  string  $baseURI  Base URI to the utility server.
      * @param  array  $guzzleConfig  Guzzle HTTP client config.
+     * @param  array  $endpoints  Custom endpoint configuration
      * @return self
      */
-    public static function create(string $baseURI, array $guzzleConfig = [])
+    public static function create(string $baseURI, array $guzzleConfig = [], array $endpoints = [])
     {
         $config = array_merge(['base_uri' => $baseURI], $guzzleConfig);
 
-        return new Client(new GuzzleClient($config));
+        return new Client(new GuzzleClient($config), array_merge([
+            HtmlToPdf::class => HtmlToPdf::ENDPOINT,
+        ], $endpoints));
     }
 
-    /**
-     * Create a PDF of a webpage.
-     *
-     * Example:
-     *  [
-     *      'selector' => '#selector',
-     *      'waitForSelector' => '#selector',
-     *      'waitUntil' => 'networkidle0'|'networkidle2'|'load'|'domcontentloaded',
-     *      'delay' => 3000,
-     *      'authToken' => 'Bearer bearer-auth-token',
-     *  ]
-     *
-     * @param  string  $url  URL to the webpage.
-     * @param  array  $options
-     * @return ResponseInterface
-     * @throws RequestException
-     */
-    public function pageToPdf(string $url, array $options = []): ResponseInterface
+    public function uri(string $tool): string
     {
-        $selector = $options['selector'] ?? null;
-        $waitForSelector = $options['waitForSelector'] ?? null;
-        $waitUntil = $options['waitUntil'] ?? null;
-        $authToken = $options['authToken'] ?? null;
-        $delay = $options['delay'] ?? 0;
-
-        $data = ['url' => $url];
-
-        if ($authToken) {
-            $data['authToken'] = $authToken;
-        }
-
-        if ($selector) {
-            $data['selector'] = $selector;
-        }
-
-        if ($waitForSelector) {
-            $data['waitForSelector'] = $waitForSelector;
-        }
-
-        if ($waitUntil) {
-            $data['waitUntil'] = $waitUntil;
-        }
-
-        if ($delay) {
-            $data['delay'] = $delay;
-        }
-
-        try {
-            return $this->client->request('POST', Endpoint::PAGE_TO_PDF, [
-                RequestOptions::JSON => $data,
-            ]);
-        } catch (GuzzleRequestException $e) {
-            $response = $e->getResponse();
-            $message = $response ? json_decode($response->getBody()->getContents(), true)['message'] : $this->serverUnreachableMessage(Endpoint::PAGE_TO_PDF);
-
-            throw new RequestException($message);
-        }
+        return $this->client->getConfig('base_uri') . $this->endpoints[$tool];
     }
 
-    protected function serverUnreachableMessage(string $endpoint): string
+    public function send(Request $request): ResponseInterface
     {
-        return sprintf("The URL '%s%s' was not reachable.", $this->client->getConfig('base_uri'), $endpoint);
+        return $request->send($this->client);
+    }
+
+    public function htmlToPdf(): HtmlToPdf
+    {
+        return new HtmlToPdf($this);
     }
 }
