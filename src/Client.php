@@ -17,7 +17,7 @@ class Client
     /**
      * @var array
      */
-    private $endpoints;
+    private $endpoints = [];
 
     public function __construct(ClientInterface $client, array $endpoints = [])
     {
